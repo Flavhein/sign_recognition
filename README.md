@@ -7,13 +7,20 @@ This project aim to build two models, one for sign prediction into text, another
 ### Files description
 
 This folder contains: 
-the notebook (two) ran on google colab to design and train the models.
-the dataset build with the file capture.py
-the report and the slide show of the project. 
-the file cond_gen.pt for the generator model
-the file sign\_language\_model.keras for the predictor model
-requirements.txt, only for the runner and capture.py
-the two runner to test the models on your device
+
+-the notebook (two) ran on google colab to design and train the models
+
+-the dataset build with the file capture.py
+
+-the report and the slide show of the project
+
+-the file cond_gen.pt for the generator model
+
+-the file sign\_language\_model.keras for the predictor model
+
+-requirements.txt, only for the runner and capture.py
+
+-the two runner to test the models on your device
 
 ### How to run
 
