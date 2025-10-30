@@ -22,7 +22,7 @@ hands = mp_hands.Hands(max_num_hands=1, min_detection_confidence=0.5, min_tracki
 face_mesh = mp_face.FaceMesh(static_image_mode=False, max_num_faces=1)
 mp_draw = mp.solutions.drawing_utils
 
-# === Labels (must match training) ===
+# === Labels ===
 labels = ['hello','thanks','no','smart','need','find','fuck','me','home','yes']  # 10 classes
 
 # === Helpers ===
@@ -80,29 +80,27 @@ def draw_status(image, state, progress, emoji=None):
     """
     h, w = image.shape[:2]
     pad = 12
-    size = 28  # icon size if drawn
+    size = 28  
     x, y = pad, pad
 
-    # Choose color per state
     colors = {
         'capturing': (0, 200, 0),    # green
-        'predicting': (200, 100, 0), # blue-ish/orange? let's use blue instead:
+        'predicting': (200, 100, 0), # blue
     }
     colors['predicting'] = (200, 0, 0)  # red
     colors['idle'] = (128, 128, 128)    # gray
 
-    # Try emoji first if provided and we are capturing; otherwise draw a circle
     if state == 'capturing' and emoji is not None:
         overlay_rgba(image, emoji, x, y)
         icon_right = x + emoji.shape[1]
         icon_center_y = y + emoji.shape[0] // 2
-    else:
+    else: #draw circle
         color = colors[state]
         cv2.circle(image, (x + size//2, y + size//2), size//2, color, -1)
         icon_right = x + size
         icon_center_y = y + size//2
 
-    # Progress bar (under the icon)
+    # Progress bar
     bar_w, bar_h = 160, 10
     bar_x, bar_y = icon_right + 10, icon_center_y - bar_h // 2
     cv2.rectangle(image, (bar_x, bar_y), (bar_x + bar_w, bar_y + bar_h), (60, 60, 60), 1)
@@ -146,14 +144,14 @@ while cap.isOpened():
     # Get relative keypoints
     keypoints = extract_relative_hand_keypoints(hand_results, face_results)
 
-    # Decide if we are "capturing" this frame (only when a hand is detected)
+    # Decide to capture
     hand_detected = hand_results.multi_hand_landmarks is not None
     if hand_detected:
         BUFFER.append(keypoints)
 
     progress = len(BUFFER) / float(SEQ_LEN)
 
-    # Default status: idle (no hand)
+    # Default status
     status = 'capturing' if hand_detected and len(BUFFER) < SEQ_LEN else 'predicting' if len(BUFFER) == SEQ_LEN else 'idle'
     draw_status(image, status, progress, emoji=EMOJI_ICON)
 
@@ -172,7 +170,7 @@ while cap.isOpened():
             cv2.putText(image, f"Low confidence ({confidence:.2f})", (10, 80),
                         cv2.FONT_HERSHEY_SIMPLEX, 0.8, (0, 165, 255), 2, cv2.LINE_AA)
 
-        BUFFER.clear()  # reset for the next capture cycle
+        BUFFER.clear()  # reset 
 
     cv2.imshow("Sign Language Recognition", image)
     if cv2.waitKey(1) & 0xFF == 27:
